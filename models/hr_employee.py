@@ -20,6 +20,11 @@ class HrEmployee(models.Model):
         compute='_compute_records_count'
     )
 
+    vacation_control_count = fields.Integer(
+        string='Control de Vacaciones',
+        compute='_compute_records_count'
+    )
+
     @api.depends('name')
     def _compute_records_count(self):
         for employee in self:
@@ -32,6 +37,10 @@ class HrEmployee(models.Model):
             ])
             
             employee.permission_count = self.env['hr.employee.permission'].search_count([
+                ('employee_id', '=', employee.id)
+            ])
+
+            employee.vacation_control_count = self.env['hr.employee.vacation.control'].search_count([
                 ('employee_id', '=', employee.id)
             ])
 
@@ -82,6 +91,25 @@ class HrEmployee(models.Model):
             'name': f'Permisos de {self.name}',
             'type': 'ir.actions.act_window',
             'res_model': 'hr.employee.permission',
+            'view_mode': 'list,form',
+            'views': [(tree_view_id, 'list'), (form_view_id, 'form')],
+            'domain': [('employee_id', '=', self.id)],
+            'context': {
+                'default_employee_id': self.id,
+                'create': True,
+            },
+            'target': 'current',
+        }
+    
+    def action_view_vacation_control(self):
+        """Acción para mostrar el control de vacaciones del empleado"""
+        self.ensure_one()
+        tree_view_id = self.env.ref('peruanita_hr_employee.view_hr_employee_vacation_control_tree').id
+        form_view_id = self.env.ref('peruanita_hr_employee.view_hr_employee_vacation_control_form').id
+        return {
+            'name': f'Control de Vacaciones - {self.name}',
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.employee.vacation.control',
             'view_mode': 'list,form',
             'views': [(tree_view_id, 'list'), (form_view_id, 'form')],
             'domain': [('employee_id', '=', self.id)],

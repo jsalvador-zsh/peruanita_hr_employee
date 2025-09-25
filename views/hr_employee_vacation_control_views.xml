@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action para Vacaciones Tomadas (debe ir primero) -->
+    <record id="action_hr_employee_vacation_taken" model="ir.actions.act_window">
+        <field name="name">Vacaciones Tomadas</field>
+        <field name="res_model">hr.employee.vacation.taken</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registrar nuevas vacaciones tomadas
+            </p>
+            <p>
+                Aquí puedes registrar los períodos de vacaciones que han tomado los empleados.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree View para Control de Vacaciones -->
+    <record id="view_hr_employee_vacation_control_tree" model="ir.ui.view">
+        <field name="name">hr.employee.vacation.control.tree</field>
+        <field name="model">hr.employee.vacation.control</field>
+        <field name="arch" type="xml">
+            <list string="Control de Vacaciones" decoration-info="period_status == 'active'" decoration-muted="period_status == 'closed'" decoration-danger="period_status == 'expired'">
+                <field name="employee_id"/>
+                <field name="job_id"/>
+                <field name="department_id"/>
+                <field name="period_year"/>
+                <field name="days_earned_current_period"/>
+                <field name="days_from_previous_periods"/>
+                <field name="days_total_available"/>
+                <field name="days_taken"/>
+                <field name="days_pending"/>
+                <field name="period_status" widget="badge" decoration-info="period_status == 'active'" decoration-muted="period_status == 'closed'" decoration-danger="period_status == 'expired'"/>
+                <field name="is_vacation_granted" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View para Control de Vacaciones -->
+    <record id="view_hr_employee_vacation_control_form" model="ir.ui.view">
+        <field name="name">hr.employee.vacation.control.form</field>
+        <field name="model">hr.employee.vacation.control</field>
+        <field name="arch" type="xml">
+            <form string="Control de Vacaciones">
+                <header>
+                    <button name="action_grant_vacation" string="Otorgar Vacaciones" type="object" class="btn-primary" invisible="is_vacation_granted"/>
+                    <button name="action_close_period" string="Cerrar Período" type="object" class="btn-secondary" invisible="period_status == 'closed'"/>
+                    <field name="period_status" widget="statusbar" statusbar_visible="active,expired,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_hr_employee_vacation_taken)d" type="action" class="oe_stat_button" icon="fa-calendar">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="days_taken"/></span>
+                                <span class="o_stat_text">Días Tomados</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="job_id" readonly="1"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="period_year" required="1"/>
+                        </group>
+                        <group>
+                            <field name="period_start_date" required="1"/>
+                            <field name="period_end_date" required="1"/>
+                            <field name="deadline_to_take_vacations"/>
+                        </group>
+                    </group>
+
+                    <group string="Control de Días">
+                        <group>
+                            <field name="days_earned_current_period"/>
+                            <field name="days_from_previous_periods"/>
+                            <field name="days_total_available" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="days_taken" readonly="1"/>
+                            <field name="days_pending" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Estado de Otorgamiento">
+                        <group>
+                            <field name="is_vacation_granted"/>
+                            <field name="vacation_granted_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Observaciones">
+                        <field name="observations" nolabel="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Vacaciones Tomadas">
+                            <field name="vacation_taken_ids" context="{'default_employee_id': employee_id, 'default_vacation_control_id': id}">
+                                <list editable="bottom">
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="days_taken" readonly="1"/>
+                                    <field name="vacation_type"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="observations"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="date_from"/>
+                                            <field name="date_to"/>
+                                            <field name="vacation_type"/>
+                                            <field name="include_weekends"/>
+                                        </group>
+                                        <group>
+                                            <field name="days_taken" readonly="1"/>
+                                            <field name="status"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="observations"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View para Control de Vacaciones -->
+    <record id="view_hr_employee_vacation_control_search" model="ir.ui.view">
+        <field name="name">hr.employee.vacation.control.search</field>
+        <field name="model">hr.employee.vacation.control</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Control de Vacaciones">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="period_year"/>
+                
+                <!-- Filtros por estado -->
+                <filter name="active_periods" string="Períodos Activos" domain="[('period_status', '=', 'active')]"/>
+                <filter name="expired_periods" string="Períodos Vencidos" domain="[('period_status', '=', 'expired')]"/>
+                <filter name="closed_periods" string="Períodos Cerrados" domain="[('period_status', '=', 'closed')]"/>
+                
+                <separator/>
+                
+                <!-- Filtros por vacaciones -->
+                <filter name="granted_vacations" string="Vacaciones Otorgadas" domain="[('is_vacation_granted', '=', True)]"/>
+                <filter name="pending_grant" string="Pendientes de Otorgar" domain="[('is_vacation_granted', '=', False)]"/>
+                <filter name="has_pending_days" string="Con Días Pendientes" domain="[('days_pending', '>', 0)]"/>
+                
+                <separator/>
+                
+                <!-- Filtros por año -->
+                <filter name="current_year" string="Año Actual" domain="[('period_year', '=', context_today().year)]"/>
+                <filter name="previous_year" string="Año Anterior" domain="[('period_year', '=', context_today().year - 1)]"/>
+                
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_employee" string="Empleado" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_department" string="Departamento" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_period_year" string="Año" context="{'group_by': 'period_year'}"/>
+                    <filter name="group_status" string="Estado" context="{'group_by': 'period_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action para Control de Vacaciones -->
+    <record id="action_hr_employee_vacation_control" model="ir.actions.act_window">
+        <field name="name">Control de Vacaciones</field>
+        <field name="res_model">hr.employee.vacation.control</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hr_employee_vacation_control_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo control de vacaciones
+            </p>
+            <p>
+                Aquí puedes gestionar los períodos vacacionales de los empleados, controlar días ganados, tomados y pendientes.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree View para Vacaciones Tomadas -->
+    <record id="view_hr_employee_vacation_taken_tree" model="ir.ui.view">
+        <field name="name">hr.employee.vacation.taken.tree</field>
+        <field name="model">hr.employee.vacation.taken</field>
+        <field name="arch" type="xml">
+            <list string="Vacaciones Tomadas" decoration-success="status == 'taken'" decoration-info="status == 'approved'" decoration-warning="status == 'planned'" decoration-danger="status == 'cancelled'">
+                <field name="employee_id"/>
+                <field name="vacation_control_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="days_taken"/>
+                <field name="vacation_type"/>
+                <field name="status" widget="badge"/>
+                <field name="approved_by"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View para Vacaciones Tomadas -->
+    <record id="view_hr_employee_vacation_taken_form" model="ir.ui.view">
+        <field name="name">hr.employee.vacation.taken.form</field>
+        <field name="model">hr.employee.vacation.taken</field>
+        <field name="arch" type="xml">
+            <form string="Vacaciones Tomadas">
+                <header>
+                    <button name="action_approve" string="Aprobar" type="object" class="btn-primary" invisible="status != 'planned'"/>
+                    <button name="action_mark_taken" string="Marcar como Tomadas" type="object" class="btn-success" invisible="status != 'approved'"/>
+                    <button name="action_cancel" string="Cancelar" type="object" class="btn-secondary"/>
+                    <field name="status" widget="statusbar" statusbar_visible="planned,approved,taken"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="vacation_control_id" required="1" domain="[('employee_id', '=', employee_id)]"/>
+                            <field name="vacation_type" required="1"/>
+                        </group>
+                        <group>
+                            <field name="date_from" required="1"/>
+                            <field name="date_to" required="1"/>
+                            <field name="include_weekends"/>
+                            <field name="days_taken" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Aprobación" invisible="status == 'planned'">
+                        <group>
+                            <field name="approved_by" readonly="1"/>
+                            <field name="approval_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Observaciones">
+                        <field name="observations" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

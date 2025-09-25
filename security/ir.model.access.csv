@@ -5,3 +5,7 @@ access_hr_employee_distribution_user,hr.employee.distribution.user,model_hr_empl
 access_hr_employee_distribution_manager,hr.employee.distribution.manager,model_hr_employee_distribution,hr.group_hr_manager,1,1,1,1
 access_hr_employee_permission_user,hr.employee.permission.user,model_hr_employee_permission,hr.group_hr_user,1,1,1,0
 access_hr_employee_permission_manager,hr.employee.permission.manager,model_hr_employee_permission,hr.group_hr_manager,1,1,1,1
+access_hr_employee_vacation_control_user,hr.employee.vacation.control.user,model_hr_employee_vacation_control,hr.group_hr_user,1,1,1,0
+access_hr_employee_vacation_control_manager,hr.employee.vacation.control.manager,model_hr_employee_vacation_control,hr.group_hr_manager,1,1,1,1
+access_hr_employee_vacation_taken_user,hr.employee.vacation.taken.user,model_hr_employee_vacation_taken,hr.group_hr_user,1,1,1,0
+access_hr_employee_vacation_taken_manager,hr.employee.vacation.taken.manager,model_hr_employee_vacation_taken,hr.group_hr_manager,1,1,1,1

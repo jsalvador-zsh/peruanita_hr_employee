@@ -33,6 +33,15 @@
                         help="Ver permisos del empleado">
                     <field name="permission_count" widget="statinfo" string="Permisos"/>
                 </button>
+                
+                <!-- Smart Button para Control de Vacaciones -->
+                <button name="action_view_vacation_control"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sun-o"
+                        help="Ver control de vacaciones del empleado">
+                    <field name="vacation_control_count" widget="statinfo" string="Vacaciones"/>
+                </button>
             </div>
         </field>
     </record>

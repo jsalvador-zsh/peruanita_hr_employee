@@ -23,4 +23,22 @@
               parent="menu_hr_employee_exit_management"
               action="action_hr_employee_permission"
               sequence="62"/>
+
+    <!-- Menú principal -->
+    <menuitem id="menu_hr_employee_vacation_management"
+              parent="hr.hr_menu_hr_reports"
+              name="Historial de Vacaciones"
+              sequence="50"/>
+
+    <menuitem id="menu_hr_employee_vacation_control"
+              name="Control de Vacaciones"
+              parent="menu_hr_employee_vacation_management"
+              action="action_hr_employee_vacation_control"
+              sequence="63"/>
+
+    <menuitem id="menu_hr_employee_vacation_taken"
+              name="Vacaciones Tomadas"
+              parent="menu_hr_employee_vacation_management"
+              action="action_hr_employee_vacation_taken"
+              sequence="64"/>
 </odoo>

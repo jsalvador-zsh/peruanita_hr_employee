@@ -19,6 +19,7 @@
         'views/hr_employee_exit_views.xml',
         'views/hr_employee_distribution_views.xml',
         'views/hr_employee_permission_views.xml',
+        'views/hr_employee_vacation_control_views.xml',
         'views/hr_employee_views.xml',
         'views/menu_views.xml',
     ],
