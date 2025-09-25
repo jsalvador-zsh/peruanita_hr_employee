@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Heredar la vista form del empleado para agregar smart buttons -->
+    <record id="view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <!-- Smart Button para Salidas -->
+                <button name="action_view_exits"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-sign-out"
+                        help="Ver salidas del empleado">
+                    <field name="exit_count" widget="statinfo" string="Salidas"/>
+                </button>
+                
+                <!-- Smart Button para Distribuciones -->
+                <button name="action_view_distributions"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-truck"
+                        help="Ver distribuciones del empleado">
+                    <field name="distribution_count" widget="statinfo" string="Distribuciones"/>
+                </button>
+                
+                <!-- Smart Button para Permisos -->
+                <button name="action_view_permissions"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-calendar-check-o"
+                        help="Ver permisos del empleado">
+                    <field name="permission_count" widget="statinfo" string="Permisos"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

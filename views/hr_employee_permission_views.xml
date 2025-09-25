@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View para Permisos -->
+    <record id="view_hr_employee_permission_tree" model="ir.ui.view">
+        <field name="name">hr.employee.permission.tree</field>
+        <field name="model">hr.employee.permission</field>
+        <field name="arch" type="xml">
+            <list string="Salidas por Permiso">
+                <field name="employee_id"/>
+                <field name="job_id"/>
+                <field name="department_id"/>
+                <field name="date"/>
+                <field name="permission_reason"/>
+                <field name="compensation_type"/>
+                <field name="days_quantity"/>
+                <field name="hours_quantity" widget="float_time"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View para Permisos -->
+    <record id="view_hr_employee_permission_form" model="ir.ui.view">
+        <field name="name">hr.employee.permission.form</field>
+        <field name="model">hr.employee.permission</field>
+        <field name="arch" type="xml">
+            <form string="Salida por Permiso">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="job_id" readonly="1"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="date" required="1"/>
+                        </group>
+                        <group>
+                            <field name="compensation_type" widget="radio" required="1"/>
+                            <field name="permission_reason" required="1"/>
+                            <field name="permission_reason_detail" invisible="permission_reason != 'other'" required="permission_reason == 'other'"/>
+
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Duración del Permiso">
+                            <group>
+                                <group string="Por Días">
+                                    <field name="days_quantity"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                </group>
+                                <group string="Por Horas">
+                                    <field name="hours_quantity" widget="float_time"/>
+                                    <field name="time_from" widget="float_time"/>
+                                    <field name="time_to" widget="float_time"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Observaciones">
+                            <group>
+                                <field name="observations" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View para Permisos -->
+    <record id="view_hr_employee_permission_search" model="ir.ui.view">
+        <field name="name">hr.employee.permission.search</field>
+        <field name="model">hr.employee.permission</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Permisos">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="permission_reason"/>
+                <field name="compensation_type"/>
+                <field name="date"/>
+                
+                <!-- Filtros por motivo -->
+                <filter name="personal" string="Motivos Personales" domain="[('permission_reason', '=', 'personal')]"/>
+                <filter name="illness" string="Enfermedad" domain="[('permission_reason', '=', 'illness_no_essalud')]"/>
+                <filter name="medical" string="Cita Médica" domain="[('permission_reason', '=', 'medical_appointment')]"/>
+                <filter name="other_reason" string="Otros Motivos" domain="[('permission_reason', '=', 'other')]"/>
+                
+                <separator/>
+                
+                <!-- Filtros por compensación -->
+                <filter name="vacation_comp" string="A cuenta de vacaciones" domain="[('compensation_type', '=', 'vacation')]"/>
+                <filter name="unpaid_comp" string="Licencia sin goce" domain="[('compensation_type', '=', 'unpaid_leave')]"/>
+                <filter name="hours_comp" string="Compensa horas" domain="[('compensation_type', '=', 'compensate_hours')]"/>
+                
+                <separator/>
+                
+                <!-- Filtros de fecha -->
+                <filter name="today" string="Hoy" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="this_week" string="Esta Semana" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_month" string="Este Mes" domain="[('date', '&gt;=', context_today().replace(day=1).strftime('%Y-%m-%d'))]"/>
+                
+                <separator/>
+                
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_employee" string="Empleado" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_department" string="Departamento" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_permission_reason" string="Motivo de Permiso" context="{'group_by': 'permission_reason'}"/>
+                    <filter name="group_compensation" string="Tipo de Compensación" context="{'group_by': 'compensation_type'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action para Permisos -->
+    <record id="action_hr_employee_permission" model="ir.actions.act_window">
+        <field name="name">Salidas por Permiso</field>
+        <field name="res_model">hr.employee.permission</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hr_employee_permission_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva salida por permiso
+            </p>
+            <p>
+                Aquí puedes registrar las salidas por permisos de los empleados, especificando duración, motivos y tipo de compensación.
+            </p>
+        </field>
+    </record>
+</odoo>
