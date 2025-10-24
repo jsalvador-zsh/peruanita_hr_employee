@@ -79,7 +79,8 @@ class HrEmployeePermission(models.Model):
     compensation_type = fields.Selection([
         ('vacation', 'A cuenta de vacaciones'),
         ('unpaid_leave', 'Licencia sin goce'),
-        ('compensate_hours', 'Compensa horas')
+        ('compensate_hours', 'Compensa horas'),
+        ('other', 'Otro')
     ], string='Se Compensa Con', required=True)
     
     # Motivo de permiso
