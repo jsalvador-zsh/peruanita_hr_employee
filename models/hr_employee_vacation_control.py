@@ -60,7 +60,7 @@ class HrEmployeeVacationControl(models.Model):
     # Días de vacaciones
     days_earned_current_period = fields.Float(
         string='Días Ganados Período Actual',
-        default=30.0,
+        default=15.0,
         help='Días de vacaciones ganados en este período laboral'
     )
     
@@ -187,7 +187,7 @@ class HrEmployeeVacationControl(models.Model):
                 'period_start_date': self.period_end_date + relativedelta(days=1),
                 'period_end_date': self.period_end_date + relativedelta(years=1),
                 'days_from_previous_periods': self.days_pending,
-                'days_earned_current_period': 30.0,  # Días estándar
+                'days_earned_current_period': 15.0,  # Días estándar
             })
         self.period_status = 'closed'
         return True
@@ -219,7 +219,7 @@ class HrEmployeeVacationControl(models.Model):
                     'period_year': year,
                     'period_start_date': start_date,
                     'period_end_date': date(year, 12, 31),
-                    'days_earned_current_period': 30.0,
+                    'days_earned_current_period': 15.0,
                 })
                 created_records += record
         
@@ -305,22 +305,13 @@ class HrEmployeeVacationTaken(models.Model):
         string='Observaciones'
     )
 
-    @api.depends('date_from', 'date_to', 'include_weekends')
+    @api.depends('date_from', 'date_to')
     def _compute_days_taken(self):
         for record in self:
             if record.date_from and record.date_to:
-                if record.include_weekends:
-                    delta = record.date_to - record.date_from
-                    record.days_taken = delta.days + 1
-                else:
-                    # Contar solo días laborales (lunes a viernes)
-                    current_date = record.date_from
-                    days_count = 0
-                    while current_date <= record.date_to:
-                        if current_date.weekday() < 5:  # 0=Monday, 4=Friday
-                            days_count += 1
-                        current_date += relativedelta(days=1)
-                    record.days_taken = days_count
+                # Calcular todos los días incluyendo sábados y domingos
+                delta = record.date_to - record.date_from
+                record.days_taken = delta.days + 1
             else:
                 record.days_taken = 0
 

@@ -79,12 +79,16 @@ class HrEmployeePermission(models.Model):
     compensation_type = fields.Selection([
         ('vacation', 'A cuenta de vacaciones'),
         ('unpaid_leave', 'Licencia sin goce'),
-        ('compensate_hours', 'Compensa horas')
+        ('compensate_hours', 'Compensa horas'),
+        ('health', 'Salud'),
+        ('other', 'Otro')
     ], string='Se Compensa Con', required=True)
     
     # Motivo de permiso
     permission_reason = fields.Selection([
         ('personal', 'Motivos personales'),
+        ('emercency', 'Emergencia médica'),
+        ('medical_rest', 'Descanso médico'),
         ('illness_no_essalud', 'Enfermedad sin atención ESSALUD'),
         ('medical_appointment', 'Cita médica'),
         ('other', 'Otros')
